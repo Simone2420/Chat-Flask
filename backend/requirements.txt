@@ -1,0 +1,9 @@
+flask
+flask-socketio
+sqlmodel
+pymysql
+python-dotenv
+eventlet
+gunicorn
+# Dependencias recomendadas para producción
+cryptography
