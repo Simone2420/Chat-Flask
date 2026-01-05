@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from sqlmodel import Session, select
-from database import engine, init_db, get_session
+from database import engine, init_db, get_session, production_engine
 from models import User, Room, Message
 import datetime
 
@@ -35,7 +35,7 @@ def handle_join(data):
 
     print(f"Usuario {username} entrando a sala {room_name}")
 
-    with Session(engine) as session:
+    with Session(production_engine) as session:
         # 1. Buscar o crear Usuario
         user = session.exec(select(User).where(User.username == username)).first()
         if not user:
@@ -81,7 +81,7 @@ def handle_message(data):
     room_name = data['room']
     content = data['content']
 
-    with Session(engine) as session:
+    with Session(production_engine) as session:
         # Buscamos ids (asumimos que existen porque se unió antes)
         user = session.exec(select(User).where(User.username == username)).first()
         room = session.exec(select(Room).where(Room.name == room_name)).first()
