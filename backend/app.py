@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 
 # CORS permitido para todo origen para facilitar pruebas locales independientes
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*",async_mode="threading",)
 
 # --- Eventos de WebSocket ---
 
