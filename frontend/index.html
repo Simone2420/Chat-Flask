@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat en Tiempo Real</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="./styles.css">
     <!-- Cliente de Socket.IO (versión compatible con Flask-SocketIO) -->
-    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"
+        integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+"
+        crossorigin="anonymous"></script>
 </head>
+
 <body>
     <div class="container">
         <!-- Pantalla de Inicio de Sesión -->
         <div id="login-screen">
             <h1>Bienvenido al Chat</h1>
+            <p id="connection-status" style="color: red; font-weight: bold; margin-bottom: 10px;">Desconectado...</p>
             <input type="text" id="username-input" placeholder="Nombre de usuario" />
             <input type="text" id="room-input" placeholder="Nombre de la sala" />
             <button id="join-btn">Entrar al Chat</button>
@@ -24,7 +29,7 @@
                 <h2 id="room-title">Sala: </h2>
                 <button id="leave-btn">Salir</button>
             </div>
-            
+
             <div id="messages-container">
                 <!-- Los mensajes aparecerán aquí -->
             </div>
@@ -36,6 +41,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="./script.js"></script>
 </body>
+
 </html>

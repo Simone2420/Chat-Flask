@@ -1,6 +1,19 @@
-// URL del backend (asumimos localhost:5000 por defecto para desarrollo)
-// Si fuera producción, cambiaríamos esto.
-const BACKEND_URL = "http://localhost:5000";
+// Configuración del Backend
+let BACKEND_URL = "http://localhost:5000"; // Valor por defecto para local
+
+// Detectar si estamos en un entorno de "Live Server" o similar (localhost/127.0.0.1)
+const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+
+// Si NO es localhost (es decir, estamos desplegados) y no es archivo local (file://),
+// asumimos que el backend está en una URL de producción que debes configurar.
+// Puedes cambiar 'https://tu-backend-real.com' por tu URL de Railway/Render/etc.
+if (!isLocalhost && window.location.protocol !== 'file:') {
+    BACKEND_URL = "https://tu-backend-real.com";
+    // O si el backend sirve el frontend, podrías usar:
+    // BACKEND_URL = window.location.origin;
+}
+
+console.log("Conectando a:", BACKEND_URL);
 
 let socket;
 let currentUser = "";
