@@ -26,17 +26,22 @@ def handle_disconnect():
 
 @socketio.on('join')
 def handle_join(data):
-    """
-    Maneja la unión de un usuario a una sala.
-    Data esperada: {'username': 'nombre', 'room': 'sala'}
-    """
     username = data['username']
     room_name = data['room']
+    sid = request.sid  # capturamos por claridad
 
-    print(f"Usuario {username} entrando a sala {room_name}")
+    print(f"Usuario {username} entrando a sala {room_name} (sid={sid})")
+
+    try:
+        # Únete a la sala inmediatamente
+        join_room(room_name)
+    except KeyError:
+        # El cliente ya se desconectó; no sigas procesando
+        print(f"No se pudo unir {sid} a {room_name}: sid ya no existe")
+        return
 
     with Session(production_engine) as session:
-        # 1. Buscar o crear Usuario
+        # 1. Usuario
         user = session.exec(select(User).where(User.username == username)).first()
         if not user:
             user = User(username=username)
@@ -44,7 +49,7 @@ def handle_join(data):
             session.commit()
             session.refresh(user)
 
-        # 2. Buscar o crear Sala
+        # 2. Sala
         room = session.exec(select(Room).where(Room.name == room_name)).first()
         if not room:
             room = Room(name=room_name)
@@ -52,24 +57,22 @@ def handle_join(data):
             session.commit()
             session.refresh(room)
 
-        # Unir al cliente a la sala de SocketIO
-        join_room(room_name)
-
-        # 3. Recuperar TODO el historial de mensajes de la sala
-        # Ordenados por fecha
-        messages = session.exec(select(Message).where(Message.room_id == room.id).order_by(Message.timestamp)).all()
-        
+        # 3. Historial
+        messages = session.exec(
+            select(Message)
+            .where(Message.room_id == room.id)
+            .order_by(Message.timestamp)
+        ).all()
         history = [msg.to_dict() for msg in messages]
 
-        # Enviar historial SOLO al usuario que acaba de entrar
-        emit('history', history, to=request.sid)
+        emit('history', history, to=sid)
 
-        # Notificar a los demás en la sala
         emit('message', {
             'user': 'Sistema',
             'content': f'{username} se ha unido a la sala.',
             'timestamp': datetime.datetime.utcnow().isoformat()
         }, room=room_name)
+
 
 @socketio.on('message')
 def handle_message(data):
@@ -102,4 +105,4 @@ if __name__ == '__main__':
     init_db()
     # Ejecutar la app con SocketIO
     print("Iniciando servidor en http://127.0.0.1:5000")
-    socketio.run(app, debug=True, port=5000)
+    socketio.run(app, debug=False, port=5000)
